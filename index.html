@@ -7,6 +7,7 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#070b14">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
   :root {
     --bg: #070b14;
@@ -241,14 +242,14 @@
     </div>
     
     <div class="qr-wrapper">
-      <canvas id="qr-canvas" class="qr-canvas" width="200" height="200"></canvas>
+      <div id="qr-canvas" style="border-radius:12px;margin-bottom:16px;display:inline-block;"></div>
       <div class="qr-brand">Door<span style="color:var(--accent-dim)">Lynk</span></div>
       <div class="qr-hint">Scan to ring the bell</div>
       <div class="qr-property" id="qr-property-tag">My Home</div>
     </div>
     
     <div class="qr-url-box">
-      <span class="qr-url-text" id="qr-url-display">yourusername.github.io/doorlynk/visitor.html?p=my-home</span>
+      <span class="qr-url-text" id="qr-url-display">fia-jiap.github.io/doorlynk/visitor.html?p=my-home</span>
       <button class="qr-copy-btn" onclick="copyURL()">Copy</button>
     </div>
     
@@ -424,7 +425,7 @@ function updateUI() {
   document.getElementById('qr-property-tag').textContent = propertyName;
   
   const slug = propertyName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-  document.getElementById('qr-url-display').textContent = `yourusername.github.io/doorlynk/visitor.html?p=${slug}`;
+  document.getElementById('qr-url-display').textContent = `fia-jiap.github.io/doorlynk/visitor.html?p=${slug}`;
   
   // Stats
   const today = new Date().toDateString();
@@ -524,64 +525,27 @@ function removeFamilyMember(i) {
   updateUI();
 }
 
-// ── QR Code Drawing ──
+// ── QR Code Drawing (Real scannable QR) ──
+let qrInstance = null;
 function drawQR() {
-  const canvas = document.getElementById('qr-canvas');
-  const ctx = canvas.getContext('2d');
-  const size = 200;
-  const modules = 25;
-  const cellSize = size / modules;
+  const container = document.getElementById('qr-canvas');
+  const slug = propertyName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+  const url = `https://fia-jiap.github.io/doorlynk/visitor.html?p=${slug}`;
   
-  ctx.fillStyle = '#ffffff';
-  ctx.fillRect(0, 0, size, size);
-  
-  // Generate deterministic pattern from property name
-  const slug = propertyName.toLowerCase().replace(/\s+/g, '-');
-  let seed = 0;
-  for (let i = 0; i < slug.length; i++) seed = (seed * 31 + slug.charCodeAt(i)) & 0xffffffff;
-  
-  const matrix = [];
-  for (let y = 0; y < modules; y++) {
-    matrix[y] = [];
-    for (let x = 0; x < modules; x++) matrix[y][x] = false;
-  }
-  
-  // Finder patterns
-  function addFinder(ox, oy) {
-    for (let y = 0; y < 7; y++)
-      for (let x = 0; x < 7; x++)
-        matrix[oy+y][ox+x] = y===0||y===6||x===0||x===6||(y>=2&&y<=4&&x>=2&&x<=4);
-  }
-  addFinder(0, 0);
-  addFinder(modules-7, 0);
-  addFinder(0, modules-7);
-  
-  // Data pattern
-  for (let y = 0; y < modules; y++)
-    for (let x = 0; x < modules; x++)
-      if (!matrix[y][x]) {
-        seed = (seed * 1103515245 + 12345) & 0x7fffffff;
-        matrix[y][x] = seed % 3 === 0;
-      }
-  
-  // Draw
-  ctx.fillStyle = '#070b14';
-  for (let y = 0; y < modules; y++)
-    for (let x = 0; x < modules; x++)
-      if (matrix[y][x]) {
-        const r = cellSize * 0.15;
-        const px = x * cellSize + cellSize * 0.1;
-        const py = y * cellSize + cellSize * 0.1;
-        const pw = cellSize * 0.8;
-        ctx.beginPath();
-        ctx.roundRect(px, py, pw, pw, r);
-        ctx.fill();
-      }
+  container.innerHTML = '';
+  qrInstance = new QRCode(container, {
+    text: url,
+    width: 200,
+    height: 200,
+    colorDark: '#070b14',
+    colorLight: '#ffffff',
+    correctLevel: QRCode.CorrectLevel.H
+  });
 }
 
 function copyURL() {
   const slug = propertyName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-  const url = `https://yourusername.github.io/doorlynk/visitor.html?p=${slug}`;
+  const url = `https://fia-jiap.github.io/doorlynk/visitor.html?p=${slug}`;
   navigator.clipboard.writeText(url).then(() => {
     const btn = document.querySelector('.qr-copy-btn');
     btn.textContent = 'Copied!';
@@ -592,7 +556,9 @@ function copyURL() {
 }
 
 function printQR() {
-  const canvas = document.getElementById('qr-canvas');
+  const container = document.getElementById('qr-canvas');
+  const img = container.querySelector('img') || container.querySelector('canvas');
+  const src = img.tagName === 'IMG' ? img.src : img.toDataURL();
   const win = window.open('', '_blank');
   win.document.write(`
     <html><head><title>DoorLynk QR Code</title>
@@ -600,7 +566,7 @@ function printQR() {
     </head><body>
     <h1>🔔 DoorLynk</h1>
     <p>Scan to ring the bell</p>
-    <img src="${canvas.toDataURL()}" width="250" height="250">
+    <img src="${src}" width="250" height="250">
     <div class="tag">${propertyName}</div>
     <script>setTimeout(()=>window.print(),500)<\/script>
     </body></html>
@@ -609,7 +575,7 @@ function printQR() {
 
 function shareQR() {
   const slug = propertyName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-  const url = `https://yourusername.github.io/doorlynk/visitor.html?p=${slug}`;
+  const url = `https://fia-jiap.github.io/doorlynk/visitor.html?p=${slug}`;
   if (navigator.share) {
     navigator.share({ title: 'DoorLynk - ' + propertyName, text: 'Ring my doorbell:', url: url });
   } else {
