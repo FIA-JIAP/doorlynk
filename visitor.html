@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>DoorLynk - Ring the Bell</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#070b14">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #070b14;
+    --card: #0f1525;
+    --border: #1a2340;
+    --accent: #00e0c6;
+    --accent-dim: #009e8c;
+    --accent-glow: rgba(0,224,198,0.08);
+    --green: #10b981;
+    --red: #ef4444;
+    --text: #eaf0f6;
+    --dim: #5a6a85;
+    --subtle: #283350;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+  
+  /* ── Landing Screen ── */
+  .landing { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px 24px; position: relative; overflow: hidden; }
+  .landing::before { content: ''; position: absolute; top: -40%; left: -20%; width: 140%; height: 80%; background: radial-gradient(ellipse, rgba(0,224,198,0.04) 0%, transparent 70%); pointer-events: none; }
+  .landing::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--accent-glow), transparent); }
+  
+  .logo-ring { width: 88px; height: 88px; border-radius: 24px; background: linear-gradient(145deg, var(--accent), var(--accent-dim)); display: flex; align-items: center; justify-content: center; font-size: 38px; margin-bottom: 24px; position: relative; box-shadow: 0 12px 48px rgba(0,224,198,0.15), inset 0 1px 0 rgba(255,255,255,0.15); animation: float 4s ease-in-out infinite; }
+  .logo-ring::after { content: ''; position: absolute; inset: -3px; border-radius: 27px; border: 1px solid rgba(0,224,198,0.2); }
+  
+  .landing h1 { font-size: 32px; font-weight: 800; letter-spacing: -1px; margin-bottom: 6px; }
+  .landing h1 span { color: var(--accent); }
+  .landing .subtitle { color: var(--dim); font-size: 15px; line-height: 1.6; text-align: center; margin-bottom: 36px; max-width: 280px; }
+  
+  .ring-btn { width: 100%; max-width: 320px; padding: 18px 28px; background: linear-gradient(135deg, var(--accent), var(--accent-dim)); border: none; border-radius: 16px; color: var(--bg); font-size: 17px; font-weight: 800; font-family: inherit; cursor: pointer; letter-spacing: 0.3px; box-shadow: 0 6px 32px rgba(0,224,198,0.25), 0 0 0 1px rgba(0,224,198,0.15); transition: all 0.25s ease; display: flex; align-items: center; justify-content: center; gap: 10px; }
+  .ring-btn:active { transform: scale(0.97); box-shadow: 0 2px 16px rgba(0,224,198,0.2); }
+  
+  .secure-badge { margin-top: 40px; display: flex; align-items: center; gap: 8px; color: var(--dim); font-size: 12px; font-weight: 500; }
+  .secure-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px rgba(16,185,129,0.5); }
+  
+  .property-tag { margin-top: 12px; padding: 6px 16px; background: var(--card); border: 1px solid var(--border); border-radius: 8px; font-size: 12px; color: var(--dim); font-weight: 600; }
+  
+  /* ── Camera Screen ── */
+  .camera-screen { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; background: var(--bg); }
+  .camera-box { width: 260px; height: 340px; border-radius: 24px; background: var(--card); border: 2px solid var(--border); overflow: hidden; position: relative; margin-bottom: 20px; }
+  .camera-box video { width: 100%; height: 100%; object-fit: cover; }
+  .camera-placeholder { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: var(--dim); font-size: 13px; }
+  .camera-placeholder .cam-icon { font-size: 52px; margin-bottom: 4px; }
+  .rec-dot { position: absolute; top: 14px; right: 14px; width: 12px; height: 12px; border-radius: 50%; background: var(--red); animation: blink 1s infinite; box-shadow: 0 0 8px rgba(239,68,68,0.5); }
+  .camera-hint { color: var(--dim); font-size: 13px; text-align: center; margin-bottom: 24px; line-height: 1.5; }
+  .call-btn { width: 100%; max-width: 280px; padding: 16px 24px; background: linear-gradient(135deg, var(--green), #059669); border: none; border-radius: 14px; color: #fff; font-size: 16px; font-weight: 700; font-family: inherit; cursor: pointer; box-shadow: 0 4px 24px rgba(16,185,129,0.3); display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .cancel-link { margin-top: 14px; background: none; border: none; color: var(--dim); font-size: 13px; cursor: pointer; font-family: inherit; }
+  
+  /* ── Calling Screen ── */
+  .calling-screen { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; background: var(--bg); position: relative; }
+  .calling-avatar { width: 110px; height: 110px; border-radius: 50%; background: linear-gradient(145deg, var(--accent), var(--accent-dim)); display: flex; align-items: center; justify-content: center; font-size: 48px; z-index: 2; box-shadow: 0 0 48px var(--accent-glow); }
+  .calling-screen h2 { font-size: 22px; font-weight: 700; margin-top: 28px; z-index: 2; }
+  .calling-status { color: var(--dim); font-size: 14px; margin-top: 6px; z-index: 2; animation: blink 1.5s infinite; }
+  .end-btn { margin-top: 48px; width: 68px; height: 68px; border-radius: 50%; background: linear-gradient(135deg, var(--red), #dc2626); border: none; font-size: 26px; cursor: pointer; box-shadow: 0 4px 24px rgba(239,68,68,0.35); z-index: 2; display: flex; align-items: center; justify-content: center; }
+  
+  .pulse-ring { position: absolute; border-radius: 50%; border: 2px solid var(--accent); opacity: 0; animation: pulseRing 2.5s ease-out infinite; }
+  .pulse-ring:nth-child(1) { width: 140px; height: 140px; animation-delay: 0s; }
+  .pulse-ring:nth-child(2) { width: 200px; height: 200px; animation-delay: 0.6s; }
+  .pulse-ring:nth-child(3) { width: 260px; height: 260px; animation-delay: 1.2s; }
+  
+  /* ── Connected Screen ── */
+  .connected-screen { min-height: 100vh; display: flex; flex-direction: column; background: #000; position: relative; }
+  .remote-video-area { flex: 1; background: linear-gradient(180deg, #111827, #0a0e17); display: flex; align-items: center; justify-content: center; position: relative; }
+  .remote-video-area video { width: 100%; height: 100%; object-fit: cover; }
+  .remote-placeholder { text-align: center; }
+  .remote-placeholder .rp-icon { font-size: 80px; margin-bottom: 12px; }
+  .remote-placeholder .rp-name { font-size: 18px; font-weight: 700; }
+  .remote-placeholder .rp-status { color: var(--green); font-size: 14px; margin-top: 4px; }
+  .self-video { position: absolute; top: 54px; right: 16px; width: 110px; height: 150px; border-radius: 16px; background: var(--card); border: 2px solid var(--border); overflow: hidden; z-index: 5; }
+  .self-video video { width: 100%; height: 100%; object-fit: cover; }
+  .self-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 36px; }
+  .call-timer { position: absolute; top: 16px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.7); padding: 6px 18px; border-radius: 20px; font-size: 14px; font-weight: 600; z-index: 5; display: flex; align-items: center; gap: 6px; }
+  .call-timer .ct-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); animation: blink 1s infinite; }
+  .call-controls { padding: 24px 24px 40px; background: linear-gradient(0deg, rgba(0,0,0,0.95), transparent); display: flex; justify-content: center; gap: 24px; position: absolute; bottom: 0; left: 0; right: 0; z-index: 5; }
+  .ctrl-btn { width: 58px; height: 58px; border-radius: 50%; border: none; font-size: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .ctrl-mute { background: var(--subtle); }
+  .ctrl-flip { background: var(--subtle); }
+  .ctrl-end { background: linear-gradient(135deg, var(--red), #dc2626); box-shadow: 0 4px 20px rgba(239,68,68,0.4); }
+  
+  /* ── Ended Screen ── */
+  .ended-screen { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; background: var(--bg); }
+  .ended-icon { width: 80px; height: 80px; border-radius: 50%; background: var(--subtle); display: flex; align-items: center; justify-content: center; font-size: 34px; margin-bottom: 20px; color: var(--accent); }
+  .ended-screen h2 { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+  .ended-duration { color: var(--dim); font-size: 14px; margin-bottom: 28px; }
+  .again-btn { padding: 14px 36px; background: var(--card); border: 1px solid var(--border); border-radius: 14px; color: var(--text); font-size: 15px; font-weight: 600; font-family: inherit; cursor: pointer; }
+  
+  /* ── Error Screen ── */
+  .error-screen { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px; background: var(--bg); text-align: center; }
+  .error-icon { font-size: 52px; margin-bottom: 16px; }
+  .error-screen h2 { font-size: 20px; margin-bottom: 8px; color: var(--red); }
+  .error-msg { color: var(--dim); font-size: 14px; line-height: 1.6; max-width: 300px; margin-bottom: 24px; }
+  
+  /* ── Animations ── */
+  @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+  @keyframes pulseRing { 0% { transform: scale(0.5); opacity: 0.5; } 100% { transform: scale(1); opacity: 0; } }
+  
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<!-- ═══ LANDING ═══ -->
+<div id="screen-landing" class="landing">
+  <div class="logo-ring">🔔</div>
+  <h1>Door<span>Lynk</span></h1>
+  <p class="subtitle">You're at someone's door. Tap below to ring the bell and start a video call.</p>
+  <button class="ring-btn" onclick="startCamera()">📹 Ring Door Bell</button>
+  <div class="secure-badge"><span class="secure-dot"></span> End-to-End Encrypted</div>
+  <div class="property-tag" id="property-name">Loading...</div>
+</div>
+
+<!-- ═══ CAMERA ═══ -->
+<div id="screen-camera" class="camera-screen hidden">
+  <div class="camera-box">
+    <video id="local-preview" autoplay playsinline muted></video>
+    <div id="camera-fallback" class="camera-placeholder hidden">
+      <span class="cam-icon">📷</span>
+      <span>Camera unavailable</span>
+    </div>
+    <div class="rec-dot"></div>
+  </div>
+  <p class="camera-hint">The homeowner will see your face<br>for identification.</p>
+  <button class="call-btn" onclick="startCall()">📞 Start Video Call</button>
+  <button class="cancel-link" onclick="cancelCall()">Cancel</button>
+</div>
+
+<!-- ═══ CALLING ═══ -->
+<div id="screen-calling" class="calling-screen hidden">
+  <div class="pulse-ring"></div>
+  <div class="pulse-ring"></div>
+  <div class="pulse-ring"></div>
+  <div class="calling-avatar">🏠</div>
+  <h2>Calling Homeowner...</h2>
+  <p class="calling-status">Ringing</p>
+  <button class="end-btn" onclick="endCall()">✕</button>
+</div>
+
+<!-- ═══ CONNECTED ═══ -->
+<div id="screen-connected" class="connected-screen hidden">
+  <div class="remote-video-area">
+    <video id="remote-video" autoplay playsinline></video>
+    <div id="remote-placeholder" class="remote-placeholder">
+      <div class="rp-icon">🏠</div>
+      <div class="rp-name">Homeowner</div>
+      <div class="rp-status">Connected</div>
+    </div>
+  </div>
+  <div class="self-video">
+    <video id="self-video" autoplay playsinline muted></video>
+    <div id="self-placeholder" class="self-placeholder">👤</div>
+  </div>
+  <div class="call-timer"><span class="ct-dot"></span><span id="timer-display">0:00</span></div>
+  <div class="call-controls">
+    <button class="ctrl-btn ctrl-mute" id="btn-mute" onclick="toggleMute()">🔇</button>
+    <button class="ctrl-btn ctrl-flip" onclick="flipCamera()">📷</button>
+    <button class="ctrl-btn ctrl-end" onclick="endCall()">✕</button>
+  </div>
+</div>
+
+<!-- ═══ ENDED ═══ -->
+<div id="screen-ended" class="ended-screen hidden">
+  <div class="ended-icon">✓</div>
+  <h2>Call Ended</h2>
+  <p class="ended-duration" id="ended-duration"></p>
+  <button class="again-btn" onclick="resetToLanding()">Ring Again</button>
+</div>
+
+<!-- ═══ ERROR ═══ -->
+<div id="screen-error" class="error-screen hidden">
+  <div class="error-icon">⚠️</div>
+  <h2>Connection Failed</h2>
+  <p class="error-msg" id="error-msg">Could not connect to the homeowner. They may be offline.</p>
+  <button class="again-btn" onclick="resetToLanding()">Try Again</button>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════
+// DoorLynk - Visitor Side WebRTC Client
+// ══════════════════════════════════════════════════════
+
+// ── Configuration ──
+// IMPORTANT: Replace this URL with your actual signaling server URL after deployment
+const SIGNAL_SERVER = 'wss://safe-pig-42.fia-jiap.deno.net';
+
+// Get property ID from URL: visitor.html?p=my-home
+const urlParams = new URLSearchParams(window.location.search);
+const propertyId = urlParams.get('p') || 'default';
+
+// ── State ──
+let localStream = null;
+let peerConnection = null;
+let ws = null;
+let callTimer = null;
+let callSeconds = 0;
+let isMuted = false;
+let facingMode = 'user';
+
+// ── ICE Servers (free STUN servers for NAT traversal) ──
+const iceConfig = {
+  iceServers: [
+    { urls: 'stun:stun.l.google.com:19302' },
+    { urls: 'stun:stun1.l.google.com:19302' },
+    { urls: 'stun:stun2.l.google.com:19302' },
+    { urls: 'stun:stun3.l.google.com:19302' },
+  ]
+};
+
+// ── Screen Management ──
+function showScreen(id) {
+  document.querySelectorAll('[id^="screen-"]').forEach(el => el.classList.add('hidden'));
+  document.getElementById('screen-' + id).classList.remove('hidden');
+}
+
+// ── Initialize ──
+document.getElementById('property-name').textContent = decodeURIComponent(propertyId).replace(/-/g, ' ');
+
+// ── Step 1: Start Camera ──
+async function startCamera() {
+  showScreen('camera');
+  try {
+    localStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: facingMode, width: { ideal: 640 }, height: { ideal: 480 } },
+      audio: true
+    });
+    const preview = document.getElementById('local-preview');
+    preview.srcObject = localStream;
+    document.getElementById('camera-fallback').classList.add('hidden');
+    preview.classList.remove('hidden');
+  } catch (err) {
+    console.warn('Camera access denied:', err);
+    document.getElementById('local-preview').classList.add('hidden');
+    document.getElementById('camera-fallback').classList.remove('hidden');
+    // Still allow call with audio only
+    try {
+      localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    } catch (audioErr) {
+      showScreen('error');
+      document.getElementById('error-msg').textContent = 'Please allow camera and microphone access to make a call.';
+      return;
+    }
+  }
+}
+
+// ── Step 2: Start Call (connect to signaling server) ──
+function startCall() {
+  showScreen('calling');
+  connectWebSocket();
+}
+
+// ── WebSocket Signaling ──
+function connectWebSocket() {
+  try {
+    ws = new WebSocket(SIGNAL_SERVER);
+  } catch (e) {
+    // For demo/local testing, simulate a connected call
+    simulateCall();
+    return;
+  }
+  
+  ws.onopen = () => {
+    // Tell server we're a visitor wanting to call this property
+    ws.send(JSON.stringify({
+      type: 'visitor-ring',
+      propertyId: propertyId
+    }));
+  };
+  
+  ws.onmessage = async (event) => {
+    const msg = JSON.parse(event.data);
+    
+    switch (msg.type) {
+      case 'call-accepted':
+        // Homeowner answered, create peer connection
+        await createPeerConnection();
+        const offer = await peerConnection.createOffer();
+        await peerConnection.setLocalDescription(offer);
+        ws.send(JSON.stringify({ type: 'offer', sdp: offer.sdp, propertyId }));
+        break;
+        
+      case 'answer':
+        await peerConnection.setRemoteDescription(new RTCSessionDescription({ type: 'answer', sdp: msg.sdp }));
+        break;
+        
+      case 'ice-candidate':
+        if (msg.candidate) {
+          await peerConnection.addIceCandidate(new RTCIceCandidate(msg.candidate));
+        }
+        break;
+        
+      case 'call-declined':
+      case 'owner-offline':
+        showScreen('error');
+        document.getElementById('error-msg').textContent =
+          msg.type === 'call-declined'
+            ? 'The homeowner declined your call.'
+            : 'The homeowner is currently offline. Please try again later.';
+        cleanup();
+        break;
+        
+      case 'call-ended':
+        endCall();
+        break;
+    }
+  };
+  
+  ws.onerror = () => {
+    // If signaling server is unreachable, run demo mode
+    simulateCall();
+  };
+  
+  ws.onclose = () => {
+    console.log('WebSocket closed');
+  };
+}
+
+// ── WebRTC Peer Connection ──
+async function createPeerConnection() {
+  peerConnection = new RTCPeerConnection(iceConfig);
+  
+  // Add local tracks
+  if (localStream) {
+    localStream.getTracks().forEach(track => {
+      peerConnection.addTrack(track, localStream);
+    });
+  }
+  
+  // Handle incoming remote tracks
+  peerConnection.ontrack = (event) => {
+    const remoteVideo = document.getElementById('remote-video');
+    remoteVideo.srcObject = event.streams[0];
+    document.getElementById('remote-placeholder').classList.add('hidden');
+    remoteVideo.classList.remove('hidden');
+  };
+  
+  // Send ICE candidates to remote peer
+  peerConnection.onicecandidate = (event) => {
+    if (event.candidate && ws && ws.readyState === WebSocket.OPEN) {
+      ws.send(JSON.stringify({
+        type: 'ice-candidate',
+        candidate: event.candidate,
+        propertyId: propertyId
+      }));
+    }
+  };
+  
+  // Connection state changes
+  peerConnection.onconnectionstatechange = () => {
+    if (peerConnection.connectionState === 'connected') {
+      onCallConnected();
+    } else if (peerConnection.connectionState === 'failed' || peerConnection.connectionState === 'disconnected') {
+      endCall();
+    }
+  };
+}
+
+// ── Call Connected ──
+function onCallConnected() {
+  showScreen('connected');
+  
+  // Show self video
+  const selfVideo = document.getElementById('self-video');
+  if (localStream && localStream.getVideoTracks().length > 0) {
+    selfVideo.srcObject = localStream;
+    document.getElementById('self-placeholder').classList.add('hidden');
+  }
+  
+  // Start timer
+  callSeconds = 0;
+  callTimer = setInterval(() => {
+    callSeconds++;
+    document.getElementById('timer-display').textContent = formatTime(callSeconds);
+  }, 1000);
+}
+
+// ── Simulate Call (Demo Mode when no server) ──
+function simulateCall() {
+  console.log('Running in demo mode (no signaling server)');
+  setTimeout(() => {
+    onCallConnected();
+    // Show self video in connected screen
+    const selfVideo = document.getElementById('self-video');
+    if (localStream && localStream.getVideoTracks().length > 0) {
+      selfVideo.srcObject = localStream;
+      document.getElementById('self-placeholder').classList.add('hidden');
+    }
+  }, 3000);
+}
+
+// ── Call Controls ──
+function toggleMute() {
+  if (!localStream) return;
+  isMuted = !isMuted;
+  localStream.getAudioTracks().forEach(t => t.enabled = !isMuted);
+  document.getElementById('btn-mute').textContent = isMuted ? '🔊' : '🔇';
+}
+
+async function flipCamera() {
+  if (!localStream) return;
+  facingMode = facingMode === 'user' ? 'environment' : 'user';
+  
+  // Stop current video tracks
+  localStream.getVideoTracks().forEach(t => t.stop());
+  
+  try {
+    const newStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: facingMode, width: { ideal: 640 }, height: { ideal: 480 } }
+    });
+    
+    const newVideoTrack = newStream.getVideoTracks()[0];
+    
+    // Replace track in peer connection
+    if (peerConnection) {
+      const sender = peerConnection.getSenders().find(s => s.track && s.track.kind === 'video');
+      if (sender) await sender.replaceTrack(newVideoTrack);
+    }
+    
+    // Replace in local stream
+    const oldVideoTrack = localStream.getVideoTracks()[0];
+    if (oldVideoTrack) localStream.removeTrack(oldVideoTrack);
+    localStream.addTrack(newVideoTrack);
+    
+    // Update self video
+    document.getElementById('self-video').srcObject = localStream;
+  } catch (err) {
+    console.warn('Could not flip camera:', err);
+  }
+}
+
+function endCall() {
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify({ type: 'call-ended', propertyId }));
+  }
+  
+  showScreen('ended');
+  document.getElementById('ended-duration').textContent = callSeconds > 0 ? 'Duration: ' + formatTime(callSeconds) : '';
+  cleanup();
+}
+
+function cancelCall() {
+  cleanup();
+  resetToLanding();
+}
+
+function cleanup() {
+  if (callTimer) { clearInterval(callTimer); callTimer = null; }
+  if (peerConnection) { peerConnection.close(); peerConnection = null; }
+  if (ws) { ws.close(); ws = null; }
+}
+
+function resetToLanding() {
+  cleanup();
+  if (localStream) {
+    localStream.getTracks().forEach(t => t.stop());
+    localStream = null;
+  }
+  callSeconds = 0;
+  isMuted = false;
+  showScreen('landing');
+}
+
+function formatTime(s) {
+  return Math.floor(s / 60) + ':' + (s % 60).toString().padStart(2, '0');
+}
+</script>
+</body>
+</html>
