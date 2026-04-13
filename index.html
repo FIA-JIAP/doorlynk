@@ -7,470 +7,311 @@
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#070b14">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
   :root {
-    --bg: #070b14;
-    --card: #0f1525;
-    --border: #1a2340;
-    --accent: #00e0c6;
-    --accent-dim: #009e8c;
-    --accent-glow: rgba(0,224,198,0.08);
-    --green: #10b981;
-    --green-bg: rgba(16,185,129,0.08);
-    --green-bd: rgba(16,185,129,0.2);
-    --red: #ef4444;
-    --red-bg: rgba(239,68,68,0.08);
-    --red-bd: rgba(239,68,68,0.2);
-    --yellow: #f59e0b;
-    --yellow-bg: rgba(245,158,11,0.08);
-    --yellow-bd: rgba(245,158,11,0.2);
-    --text: #eaf0f6;
-    --dim: #5a6a85;
-    --subtle: #283350;
+    --bg: #070b14; --card: #0f1525; --border: #1a2340;
+    --accent: #00e0c6; --accent-dim: #009e8c; --accent-glow: rgba(0,224,198,0.08);
+    --green: #10b981; --green-bg: rgba(16,185,129,0.08); --green-bd: rgba(16,185,129,0.2);
+    --red: #ef4444; --red-bg: rgba(239,68,68,0.08); --red-bd: rgba(239,68,68,0.2);
+    --yellow: #f59e0b; --yellow-bg: rgba(245,158,11,0.08); --yellow-bd: rgba(245,158,11,0.2);
+    --text: #eaf0f6; --dim: #5a6a85; --subtle: #283350;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; max-width: 430px; margin: 0 auto; }
-  
-  /* ── Header ── */
+
   .header { padding: 16px 20px 14px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: rgba(7,11,20,0.95); backdrop-filter: blur(12px); z-index: 50; }
   .header-left { display: flex; align-items: center; gap: 10px; }
-  .header-logo { width: 38px; height: 38px; border-radius: 11px; background: linear-gradient(145deg, var(--accent), var(--accent-dim)); display: flex; align-items: center; justify-content: center; font-size: 19px; box-shadow: 0 4px 16px rgba(0,224,198,0.15); }
-  .header-title { font-size: 19px; font-weight: 800; letter-spacing: -0.5px; }
-  .header-title span { color: var(--accent); }
-  .header-status { font-size: 10px; color: var(--green); font-weight: 600; display: flex; align-items: center; gap: 4px; }
-  .header-status::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--green); display: inline-block; box-shadow: 0 0 6px rgba(16,185,129,0.5); }
-  
-  /* ── Content ── */
+  .h-logo { width: 38px; height: 38px; border-radius: 11px; background: linear-gradient(145deg, var(--accent), var(--accent-dim)); display: flex; align-items: center; justify-content: center; font-size: 19px; box-shadow: 0 4px 16px rgba(0,224,198,0.15); }
+  .h-title { font-size: 19px; font-weight: 800; letter-spacing: -0.5px; }
+  .h-title span { color: var(--accent); }
+  .h-status { font-size: 10px; color: var(--green); font-weight: 600; display: flex; align-items: center; gap: 4px; }
+  .h-status::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--green); display: inline-block; }
+
   .content { padding: 16px 16px 110px; }
-  
-  /* ── Property Card ── */
-  .property-card { background: linear-gradient(145deg, var(--card), #121d35); border-radius: 18px; padding: 22px; border: 1px solid var(--border); margin-bottom: 16px; position: relative; overflow: hidden; }
-  .property-card::before { content: ''; position: absolute; top: -30px; right: -30px; width: 120px; height: 120px; border-radius: 50%; background: var(--accent-glow); filter: blur(40px); }
-  .property-label { font-size: 11px; color: var(--dim); font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px; }
-  .property-name { font-size: 24px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 6px; }
-  .property-meta { font-size: 12px; color: var(--dim); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-  .property-meta .sep { color: var(--subtle); }
-  
-  /* ── Stats Grid ── */
-  .stats-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 16px; }
-  .stat-card { background: var(--card); border-radius: 14px; padding: 16px 12px; border: 1px solid var(--border); text-align: center; }
+
+  .prop-card { background: linear-gradient(145deg, var(--card), #121d35); border-radius: 18px; padding: 22px; border: 1px solid var(--border); margin-bottom: 16px; position: relative; overflow: hidden; }
+  .prop-card::before { content: ''; position: absolute; top: -30px; right: -30px; width: 120px; height: 120px; border-radius: 50%; background: var(--accent-glow); filter: blur(40px); }
+  .prop-label { font-size: 11px; color: var(--dim); font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px; }
+  .prop-name { font-size: 24px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 6px; }
+  .prop-meta { font-size: 12px; color: var(--dim); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+
+  .stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+  .stat { background: var(--card); border-radius: 14px; padding: 16px 12px; border: 1px solid var(--border); text-align: center; }
   .stat-icon { font-size: 22px; margin-bottom: 6px; }
-  .stat-value { font-size: 24px; font-weight: 800; }
-  .stat-label { font-size: 10px; color: var(--dim); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
-  .stat-accent { color: var(--accent); }
-  .stat-green { color: var(--green); }
-  .stat-red { color: var(--red); }
-  
-  /* ── Section Title ── */
-  .section-title { font-size: 12px; font-weight: 700; color: var(--dim); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 12px; }
-  
-  /* ── Visitor Item ── */
-  .visitor-item { background: var(--card); border-radius: 14px; padding: 14px 16px; border: 1px solid var(--border); margin-bottom: 8px; display: flex; align-items: center; gap: 12px; }
-  .visitor-avatar { width: 46px; height: 46px; border-radius: 50%; background: var(--subtle); display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
-  .visitor-info { flex: 1; min-width: 0; }
-  .visitor-name { font-size: 14px; font-weight: 700; }
-  .visitor-time { font-size: 11px; color: var(--dim); margin-top: 2px; }
-  .visitor-badge { padding: 5px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; white-space: nowrap; }
-  .badge-answered { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-bd); }
-  .badge-missed { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-bd); }
-  
-  /* ── QR Section ── */
-  .qr-wrapper { background: #fff; border-radius: 22px; padding: 28px; margin-bottom: 16px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 8px 40px rgba(0,0,0,0.4); }
-  .qr-canvas { border-radius: 12px; margin-bottom: 16px; }
-  .qr-brand { font-size: 16px; font-weight: 800; color: #070b14; letter-spacing: -0.3px; }
+  .stat-val { font-size: 24px; font-weight: 800; }
+  .stat-lbl { font-size: 10px; color: var(--dim); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+
+  .sec-title { font-size: 12px; font-weight: 700; color: var(--dim); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 12px; }
+
+  .v-item { background: var(--card); border-radius: 14px; padding: 14px 16px; border: 1px solid var(--border); margin-bottom: 8px; display: flex; align-items: center; gap: 12px; }
+  .v-avatar { width: 50px; height: 50px; border-radius: 50%; background: var(--subtle); display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; overflow: hidden; }
+  .v-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .v-info { flex: 1; min-width: 0; }
+  .v-name { font-size: 14px; font-weight: 700; }
+  .v-time { font-size: 11px; color: var(--dim); margin-top: 2px; }
+  .v-badge { padding: 5px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+  .badge-ok { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-bd); }
+  .badge-miss { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-bd); }
+
+  .qr-wrap { background: #fff; border-radius: 22px; padding: 28px; margin-bottom: 16px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 8px 40px rgba(0,0,0,0.4); }
+  .qr-brand { font-size: 16px; font-weight: 800; color: #070b14; margin-top: 14px; }
   .qr-hint { font-size: 12px; color: #64748b; margin-top: 4px; }
-  .qr-property { margin-top: 8px; padding: 5px 14px; background: #f1f5f9; border-radius: 6px; font-size: 11px; color: #64748b; font-weight: 600; }
+  .qr-tag { margin-top: 8px; padding: 5px 14px; background: #f1f5f9; border-radius: 6px; font-size: 11px; color: #64748b; font-weight: 600; }
   .qr-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; width: 100%; }
-  .qr-action-btn { padding: 13px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; color: var(--accent); font-size: 13px; font-weight: 700; font-family: inherit; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
-  .qr-action-btn:active { transform: scale(0.97); }
-  
-  .qr-url-box { width: 100%; padding: 12px 14px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
-  .qr-url-text { flex: 1; font-size: 12px; color: var(--dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .qr-copy-btn { padding: 6px 12px; background: var(--accent-glow); border: 1px solid var(--accent-dim); border-radius: 6px; color: var(--accent); font-size: 11px; font-weight: 700; font-family: inherit; cursor: pointer; white-space: nowrap; }
-  
-  .tip-box { background: var(--yellow-bg); border-radius: 12px; padding: 14px; border: 1px solid var(--yellow-bd); }
+  .qr-btn { padding: 13px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; color: var(--accent); font-size: 13px; font-weight: 700; font-family: inherit; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
+  .qr-url { width: 100%; padding: 12px 14px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+  .qr-url-text { flex: 1; font-size: 11px; color: var(--dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .qr-copy { padding: 6px 12px; background: var(--accent-glow); border: 1px solid var(--accent-dim); border-radius: 6px; color: var(--accent); font-size: 11px; font-weight: 700; font-family: inherit; cursor: pointer; }
+
+  .tip { background: var(--yellow-bg); border-radius: 12px; padding: 14px; border: 1px solid var(--yellow-bd); }
   .tip-title { font-size: 12px; font-weight: 700; color: var(--yellow); margin-bottom: 6px; }
   .tip-text { font-size: 12px; color: var(--dim); line-height: 1.7; }
-  
-  /* ── Settings ── */
-  .settings-group { background: var(--card); border-radius: 14px; padding: 18px; border: 1px solid var(--border); margin-bottom: 12px; }
-  .settings-label { font-size: 11px; font-weight: 700; color: var(--dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
-  .settings-input { width: 100%; padding: 12px 16px; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font-size: 15px; font-weight: 600; font-family: inherit; outline: none; }
-  .settings-input:focus { border-color: var(--accent-dim); }
-  
+
+  .sett-group { background: var(--card); border-radius: 14px; padding: 18px; border: 1px solid var(--border); margin-bottom: 12px; }
+  .sett-label { font-size: 11px; font-weight: 700; color: var(--dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+  .sett-input { width: 100%; padding: 12px 16px; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font-size: 15px; font-weight: 600; font-family: inherit; outline: none; }
+  .sett-input:focus { border-color: var(--accent-dim); }
   .toggle-row { display: flex; align-items: center; justify-content: space-between; }
-  .toggle-info h3 { font-size: 14px; font-weight: 700; }
-  .toggle-info p { font-size: 12px; color: var(--dim); margin-top: 3px; }
-  .toggle-switch { width: 50px; height: 28px; border-radius: 14px; border: none; cursor: pointer; position: relative; transition: background 0.2s; flex-shrink: 0; }
-  .toggle-switch.on { background: var(--green); }
-  .toggle-switch.off { background: var(--subtle); }
+  .toggle-sw { width: 50px; height: 28px; border-radius: 14px; border: none; cursor: pointer; position: relative; transition: background 0.2s; flex-shrink: 0; }
+  .toggle-sw.on { background: var(--green); }
+  .toggle-sw.off { background: var(--subtle); }
   .toggle-knob { width: 22px; height: 22px; border-radius: 50%; background: #fff; position: absolute; top: 3px; transition: left 0.2s; }
-  .toggle-switch.on .toggle-knob { left: 25px; }
-  .toggle-switch.off .toggle-knob { left: 3px; }
-  
-  .range-label { font-size: 12px; color: var(--dim); margin-bottom: 8px; }
-  input[type="range"] { width: 100%; accent-color: var(--accent); }
-  .range-limits { display: flex; justify-content: space-between; font-size: 10px; color: var(--dim); margin-top: 4px; }
-  
-  .family-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: var(--bg); border-radius: 10px; margin-bottom: 6px; }
-  .family-name { font-size: 14px; font-weight: 600; }
-  .family-remove { background: none; border: none; color: var(--red); font-size: 18px; cursor: pointer; padding: 0 4px; }
-  .family-add-row { display: flex; gap: 8px; margin-top: 10px; }
-  .family-input { flex: 1; padding: 10px 14px; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font-size: 13px; font-family: inherit; outline: none; }
-  .family-add-btn { padding: 10px 18px; background: var(--accent); border: none; border-radius: 10px; color: var(--bg); font-size: 13px; font-weight: 700; font-family: inherit; cursor: pointer; }
-  
-  .security-box { background: var(--green-bg); border-radius: 14px; padding: 16px; border: 1px solid var(--green-bd); }
-  .security-title { font-size: 13px; font-weight: 700; color: var(--green); margin-bottom: 6px; }
-  .security-text { font-size: 12px; color: var(--dim); line-height: 1.7; }
-  
-  /* ── Incoming Call Overlay ── */
-  .incoming-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.88); z-index: 200; display: flex; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(16px); }
-  .incoming-avatar { width: 100px; height: 100px; border-radius: 50%; background: var(--card); border: 3px solid var(--green); display: flex; align-items: center; justify-content: center; font-size: 44px; z-index: 2; box-shadow: 0 0 48px rgba(16,185,129,0.15); }
-  .incoming-title { font-size: 22px; font-weight: 700; margin-top: 24px; z-index: 2; }
-  .incoming-sub { color: var(--dim); font-size: 14px; margin-top: 4px; z-index: 2; }
-  .incoming-actions { display: flex; gap: 36px; margin-top: 40px; z-index: 2; }
-  .incoming-btn { width: 68px; height: 68px; border-radius: 50%; border: none; font-size: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-  .incoming-decline { background: linear-gradient(135deg, var(--red), #dc2626); box-shadow: 0 4px 24px rgba(239,68,68,0.35); }
-  .incoming-accept { background: linear-gradient(135deg, var(--green), #059669); box-shadow: 0 4px 24px rgba(16,185,129,0.35); animation: shake 0.6s infinite; }
-  .incoming-labels { display: flex; gap: 36px; margin-top: 12px; z-index: 2; }
-  .incoming-labels span { width: 68px; text-align: center; font-size: 12px; font-weight: 600; }
-  .incoming-labels .lbl-decline { color: var(--red); }
-  .incoming-labels .lbl-accept { color: var(--green); }
-  
-  .pulse-ring { position: absolute; border-radius: 50%; border: 2px solid var(--green); opacity: 0; animation: pulseRing 2.5s ease-out infinite; }
-  .pulse-ring:nth-child(1) { width: 130px; height: 130px; }
-  .pulse-ring:nth-child(2) { width: 190px; height: 190px; animation-delay: 0.6s; }
-  .pulse-ring:nth-child(3) { width: 250px; height: 250px; animation-delay: 1.2s; }
-  .pulse-ring:nth-child(4) { width: 310px; height: 310px; animation-delay: 1.8s; }
-  
-  /* ── Connected Call Overlay ── */
-  .call-overlay { position: fixed; inset: 0; background: #000; z-index: 200; display: flex; flex-direction: column; }
-  .call-remote { flex: 1; background: linear-gradient(180deg, #111827, #0a0e17); display: flex; align-items: center; justify-content: center; position: relative; }
-  .call-remote video { width: 100%; height: 100%; object-fit: cover; }
-  .call-self { position: absolute; top: 54px; right: 16px; width: 110px; height: 150px; border-radius: 16px; background: var(--card); border: 2px solid var(--border); overflow: hidden; z-index: 5; }
-  .call-self video { width: 100%; height: 100%; object-fit: cover; }
-  .call-timer-bar { position: absolute; top: 16px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.7); padding: 6px 18px; border-radius: 20px; font-size: 14px; font-weight: 600; z-index: 5; display: flex; align-items: center; gap: 6px; }
-  .call-timer-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); animation: blink 1s infinite; }
-  .call-bottom { padding: 24px 24px 44px; background: linear-gradient(0deg, rgba(0,0,0,0.95), transparent); display: flex; justify-content: center; gap: 24px; position: absolute; bottom: 0; left: 0; right: 0; z-index: 5; }
-  .call-ctrl { width: 58px; height: 58px; border-radius: 50%; border: none; font-size: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-  .call-ctrl-mute { background: var(--subtle); }
-  .call-ctrl-end { background: linear-gradient(135deg, var(--red), #dc2626); box-shadow: 0 4px 20px rgba(239,68,68,0.4); }
-  
-  /* ── Tab Bar ── */
+  .toggle-sw.on .toggle-knob { left: 25px; }
+  .toggle-sw.off .toggle-knob { left: 3px; }
+  .sec-box { background: var(--green-bg); border-radius: 14px; padding: 16px; border: 1px solid var(--green-bd); }
+  .sec-box-title { font-size: 13px; font-weight: 700; color: var(--green); margin-bottom: 6px; }
+  .sec-box-text { font-size: 12px; color: var(--dim); line-height: 1.7; }
+
+  .photo-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 300; display: flex; align-items: center; justify-content: center; padding: 20px; }
+  .photo-modal img { max-width: 100%; max-height: 80vh; border-radius: 16px; }
+  .photo-close { position: absolute; top: 20px; right: 20px; width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.1); border: none; color: #fff; font-size: 20px; cursor: pointer; }
+
   .tab-bar { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 430px; display: flex; background: rgba(7,11,20,0.96); backdrop-filter: blur(16px); border-top: 1px solid var(--border); padding: 6px 0; padding-bottom: max(6px, env(safe-area-inset-bottom)); z-index: 60; }
-  .tab-btn { flex: 1; background: none; border: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; padding: 8px 0; transition: all 0.2s; border-top: 2px solid transparent; }
+  .tab-btn { flex: 1; background: none; border: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; padding: 8px 0; border-top: 2px solid transparent; transition: all 0.2s; }
   .tab-btn.active { border-top-color: var(--accent); }
-  .tab-btn .tab-icon { font-size: 20px; margin-bottom: 2px; }
-  .tab-btn .tab-label { font-size: 9px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: var(--dim); }
-  .tab-btn.active .tab-label { color: var(--accent); }
-  
-  /* ── Tab Panels ── */
+  .tab-btn .t-icon { font-size: 20px; margin-bottom: 2px; }
+  .tab-btn .t-label { font-size: 9px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: var(--dim); }
+  .tab-btn.active .t-label { color: var(--accent); }
+
   .tab-panel { display: none; }
   .tab-panel.active { display: block; }
-  
-  /* ── Animations ── */
-  @keyframes pulseRing { 0% { transform: scale(0.5); opacity: 0.5; } 100% { transform: scale(1); opacity: 0; } }
-  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-  @keyframes shake { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-10deg); } 75% { transform: rotate(10deg); } }
-  
-  button:active { transform: scale(0.97); }
+
+  .loading-spinner { width: 24px; height: 24px; border: 3px solid var(--subtle); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 20px auto; }
+
   .hidden { display: none !important; }
+  button:active { transform: scale(0.97); }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 </style>
 </head>
 <body>
 
-<!-- ═══ HEADER ═══ -->
 <div class="header">
   <div class="header-left">
-    <div class="header-logo">🔔</div>
+    <div class="h-logo">🔔</div>
     <div>
-      <div class="header-title">Door<span>Lynk</span></div>
-      <div class="header-status">Online</div>
+      <div class="h-title">Door<span>Lynk</span></div>
+      <div class="h-status">Online</div>
     </div>
   </div>
 </div>
 
-<!-- ═══ CONTENT ═══ -->
 <div class="content">
-
-  <!-- HOME TAB -->
+  <!-- HOME -->
   <div id="tab-home" class="tab-panel active">
-    <div class="property-card">
-      <div class="property-label">Your Property</div>
-      <div class="property-name" id="display-property-name">My Home</div>
-      <div class="property-meta">
-        <span style="color:var(--green)">●</span> Active
-        <span class="sep">|</span>
-        📍 GPS Verified
-        <span class="sep">|</span>
-        👥 <span id="display-member-count">1</span> members
-      </div>
+    <div class="prop-card">
+      <div class="prop-label">Your Property</div>
+      <div class="prop-name" id="d-name">My Home</div>
+      <div class="prop-meta"><span style="color:var(--green)">●</span> Active <span style="color:var(--subtle)">|</span> 📍 GPS Verified <span style="color:var(--subtle)">|</span> 📸 Photo Required</div>
     </div>
-    
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-icon">🔔</div>
-        <div class="stat-value stat-accent" id="stat-total">0</div>
-        <div class="stat-label">Today</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon">✓</div>
-        <div class="stat-value stat-green" id="stat-answered">0</div>
-        <div class="stat-label">Answered</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon">✕</div>
-        <div class="stat-value stat-red" id="stat-missed">0</div>
-        <div class="stat-label">Missed</div>
-      </div>
+    <div class="stats">
+      <div class="stat"><div class="stat-icon">🔔</div><div class="stat-val" style="color:var(--accent)" id="s-total">0</div><div class="stat-lbl">Today</div></div>
+      <div class="stat"><div class="stat-icon">✓</div><div class="stat-val" style="color:var(--green)" id="s-answered">0</div><div class="stat-lbl">Answered</div></div>
+      <div class="stat"><div class="stat-icon">✕</div><div class="stat-val" style="color:var(--red)" id="s-missed">0</div><div class="stat-lbl">Missed</div></div>
     </div>
-    
-    <button onclick="simulateIncoming()" style="width:100%;padding:14px;background:var(--accent-glow);border:1px solid rgba(0,224,198,0.2);border-radius:14px;color:var(--accent);font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;margin-bottom:16px;display:flex;align-items:center;justify-content:center;gap:8px;">
-      🔔 Simulate Incoming Ring
-    </button>
-    
-    <div class="section-title">Recent Activity</div>
-    <div id="recent-list"></div>
+    <div class="sec-title">Recent Visitors</div>
+    <div id="recent-list"><div class="loading-spinner"></div></div>
   </div>
 
-  <!-- QR TAB -->
+  <!-- QR -->
   <div id="tab-qr" class="tab-panel">
-    <div style="text-align:center;margin-bottom:20px;">
-      <div style="font-size:16px;font-weight:700;margin-bottom:4px;">Your Door QR Code</div>
-      <div style="font-size:13px;color:var(--dim);">Print this and place on your door or gate</div>
-    </div>
-    
-    <div class="qr-wrapper">
-      <div id="qr-canvas" style="border-radius:12px;margin-bottom:16px;display:inline-block;"></div>
+    <div style="text-align:center;margin-bottom:20px;"><div style="font-size:16px;font-weight:700;margin-bottom:4px;">Your Door QR Code</div><div style="font-size:13px;color:var(--dim);">Print this and place on your door or gate</div></div>
+    <div class="qr-wrap">
+      <div id="qr-code" style="border-radius:12px;display:inline-block;"></div>
       <div class="qr-brand">Door<span style="color:var(--accent-dim)">Lynk</span></div>
       <div class="qr-hint">Scan to ring the bell</div>
-      <div class="qr-property" id="qr-property-tag">My Home</div>
+      <div class="qr-tag" id="qr-tag">My Home</div>
     </div>
-    
-    <div class="qr-url-box">
-      <span class="qr-url-text" id="qr-url-display">fia-jiap.github.io/doorlynk/visitor.html?p=my-home</span>
-      <button class="qr-copy-btn" onclick="copyURL()">Copy</button>
+    <div class="qr-url">
+      <span class="qr-url-text" id="qr-url-text">loading...</span>
+      <button class="qr-copy" onclick="copyURL()">Copy</button>
     </div>
-    
     <div class="qr-actions">
-      <button class="qr-action-btn" onclick="printQR()">🖨️ Print</button>
-      <button class="qr-action-btn" onclick="shareQR()">📤 Share</button>
+      <button class="qr-btn" onclick="printQR()">🖨️ Print</button>
+      <button class="qr-btn" onclick="shareQR()">📤 Share</button>
     </div>
-    
-    <div class="tip-box">
-      <div class="tip-title">💡 Tips</div>
-      <div class="tip-text">
-        Print on waterproof sticker paper for outdoor use. Place at eye level near your door or gate. Minimum size 5cm for reliable scanning.
-      </div>
+    <div class="tip">
+      <div class="tip-title">💡 Security Note</div>
+      <div class="tip-text">Every visitor must take a photo before they can ring your bell. Photos are saved permanently in your database with timestamp and location. Even if someone scans and runs, their photo is already captured.</div>
     </div>
   </div>
 
-  <!-- HISTORY TAB -->
+  <!-- HISTORY -->
   <div id="tab-history" class="tab-panel">
-    <div style="font-size:16px;font-weight:700;margin-bottom:16px;">Visitor History</div>
-    <div id="history-list"></div>
-    <div id="no-history" style="text-align:center;padding:40px 20px;color:var(--dim);">
-      <div style="font-size:40px;margin-bottom:12px;">📋</div>
-      <div style="font-size:14px;font-weight:600;">No visitors yet</div>
-      <div style="font-size:12px;margin-top:4px;">When someone rings your bell, it will appear here.</div>
-    </div>
+    <div style="font-size:16px;font-weight:700;margin-bottom:16px;">All Visitors</div>
+    <div id="history-list"><div class="loading-spinner"></div></div>
   </div>
 
-  <!-- SETTINGS TAB -->
+  <!-- SETTINGS -->
   <div id="tab-settings" class="tab-panel">
     <div style="font-size:16px;font-weight:700;margin-bottom:16px;">Settings</div>
-    
-    <div class="settings-group">
-      <div class="settings-label">Property Name</div>
-      <input class="settings-input" id="input-property-name" value="My Home" onchange="updatePropertyName(this.value)">
+    <div class="sett-group">
+      <div class="sett-label">Property Name</div>
+      <input class="sett-input" id="inp-name" value="My Home" onchange="updateName(this.value)">
     </div>
-    
-    <div class="settings-group">
-      <div class="toggle-row" style="margin-bottom:12px;">
-        <div class="toggle-info">
-          <h3>📍 GPS Verification</h3>
-          <p>Ensure visitors are at your door</p>
-        </div>
-        <button class="toggle-switch on" id="toggle-geo" onclick="toggleGeo()">
-          <div class="toggle-knob"></div>
-        </button>
+    <div class="sett-group">
+      <div class="toggle-row">
+        <div><div style="font-size:14px;font-weight:700;">📸 Mandatory Photo</div><div style="font-size:12px;color:var(--dim);margin-top:3px;">Visitors must take a selfie before calling</div></div>
+        <button class="toggle-sw on" disabled><div class="toggle-knob"></div></button>
       </div>
-      <div id="geo-slider">
-        <div class="range-label">Radius: <strong id="geo-radius-display">50</strong>m</div>
-        <input type="range" min="10" max="200" value="50" oninput="updateGeoRadius(this.value)">
-        <div class="range-limits"><span>10m (strict)</span><span>200m (relaxed)</span></div>
-      </div>
+      <div style="font-size:11px;color:var(--accent);margin-top:8px;font-weight:600;">Always enabled for security</div>
     </div>
-    
-    <div class="settings-group">
-      <div class="settings-label">👥 Family Members</div>
-      <div style="font-size:12px;color:var(--dim);margin-bottom:12px;">Everyone listed gets notified when someone rings</div>
-      <div id="family-list"></div>
-      <div class="family-add-row">
-        <input class="family-input" id="input-new-member" placeholder="Add family member...">
-        <button class="family-add-btn" onclick="addFamilyMember()">Add</button>
+    <div class="sett-group">
+      <div class="toggle-row">
+        <div><div style="font-size:14px;font-weight:700;">🚫 Rate Limiting</div><div style="font-size:12px;color:var(--dim);margin-top:3px;">Max 5 rings per 5 minutes per visitor</div></div>
+        <button class="toggle-sw on" disabled><div class="toggle-knob"></div></button>
       </div>
+      <div style="font-size:11px;color:var(--accent);margin-top:8px;font-weight:600;">Always enabled for security</div>
     </div>
-    
-    <div class="security-box">
-      <div class="security-title">🛡️ Security</div>
-      <div class="security-text">
-        All video calls are peer-to-peer encrypted via WebRTC. No video or audio is stored on any server. Visitor photos are real-time notifications only, deleted automatically.
+    <div class="sett-group">
+      <div class="sett-label">📊 Database</div>
+      <div style="font-size:13px;color:var(--text);margin-bottom:4px;">Supabase Connected</div>
+      <div style="font-size:11px;color:var(--green);display:flex;align-items:center;gap:4px;"><span style="width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block;"></span> All visitor data saved permanently</div>
+    </div>
+    <div class="sec-box">
+      <div class="sec-box-title">🛡️ Security Features</div>
+      <div class="sec-box-text">
+        ✓ Mandatory visitor photo before call<br>
+        ✓ All photos saved to encrypted Supabase storage<br>
+        ✓ Visitor GPS location captured (when available)<br>
+        ✓ Device info logged for each visit<br>
+        ✓ Rate limiting prevents spam (5 per 5 min)<br>
+        ✓ Row Level Security on all database tables<br>
+        ✓ Video calls encrypted via WebRTC (peer-to-peer)
       </div>
     </div>
-  </div>
-
-</div>
-
-<!-- ═══ INCOMING CALL OVERLAY ═══ -->
-<div id="incoming-overlay" class="incoming-overlay hidden">
-  <div class="pulse-ring"></div>
-  <div class="pulse-ring"></div>
-  <div class="pulse-ring"></div>
-  <div class="pulse-ring"></div>
-  <div class="incoming-avatar">👤</div>
-  <div class="incoming-title">Someone at your door</div>
-  <div class="incoming-sub" id="incoming-property">My Home • Just now</div>
-  <div class="incoming-actions">
-    <button class="incoming-btn incoming-decline" onclick="declineCall()">✕</button>
-    <button class="incoming-btn incoming-accept" onclick="acceptCall()">📞</button>
-  </div>
-  <div class="incoming-labels">
-    <span class="lbl-decline">Decline</span>
-    <span class="lbl-accept">Answer</span>
   </div>
 </div>
 
-<!-- ═══ CONNECTED CALL OVERLAY ═══ -->
-<div id="call-overlay" class="call-overlay hidden">
-  <div class="call-remote">
-    <video id="owner-remote-video" autoplay playsinline></video>
-    <div id="owner-remote-placeholder" style="text-align:center;">
-      <div style="font-size:80px;margin-bottom:12px;">👤</div>
-      <div style="font-size:18px;font-weight:700;">Visitor</div>
-      <div style="color:var(--green);font-size:14px;margin-top:4px;">Connected</div>
-    </div>
-  </div>
-  <div class="call-self">
-    <video id="owner-self-video" autoplay playsinline muted></video>
-    <div id="owner-self-placeholder" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:36px;">🏠</div>
-  </div>
-  <div class="call-timer-bar"><span class="call-timer-dot"></span><span id="owner-timer">0:00</span></div>
-  <div class="call-bottom">
-    <button class="call-ctrl call-ctrl-mute" id="owner-mute-btn" onclick="ownerToggleMute()">🔇</button>
-    <button class="call-ctrl call-ctrl-end" onclick="ownerEndCall()">✕</button>
-  </div>
+<!-- Photo Modal -->
+<div id="photo-modal" class="photo-modal hidden" onclick="closePhotoModal()">
+  <button class="photo-close">✕</button>
+  <img id="modal-img" src="" alt="Visitor photo">
 </div>
 
-<!-- ═══ TAB BAR ═══ -->
+<!-- Tab Bar -->
 <div class="tab-bar">
-  <button class="tab-btn active" onclick="switchTab('home', this)">
-    <span class="tab-icon">🏠</span>
-    <span class="tab-label">Home</span>
-  </button>
-  <button class="tab-btn" onclick="switchTab('qr', this)">
-    <span class="tab-icon">📱</span>
-    <span class="tab-label">QR Code</span>
-  </button>
-  <button class="tab-btn" onclick="switchTab('history', this)">
-    <span class="tab-icon">📋</span>
-    <span class="tab-label">History</span>
-  </button>
-  <button class="tab-btn" onclick="switchTab('settings', this)">
-    <span class="tab-icon">⚙️</span>
-    <span class="tab-label">Settings</span>
-  </button>
+  <button class="tab-btn active" onclick="switchTab('home',this)"><span class="t-icon">🏠</span><span class="t-label">Home</span></button>
+  <button class="tab-btn" onclick="switchTab('qr',this)"><span class="t-icon">📱</span><span class="t-label">QR Code</span></button>
+  <button class="tab-btn" onclick="switchTab('history',this)"><span class="t-icon">📋</span><span class="t-label">History</span></button>
+  <button class="tab-btn" onclick="switchTab('settings',this)"><span class="t-icon">⚙️</span><span class="t-label">Settings</span></button>
 </div>
 
 <script>
 // ══════════════════════════════════════════════════════
-// DoorLynk - Homeowner Dashboard
+// DoorLynk Dashboard - With Supabase
 // ══════════════════════════════════════════════════════
 
-// IMPORTANT: Replace with your signaling server URL
+const SUPABASE_URL = 'https://yqrnutreesikakxhscjv.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_1TzNe9SaebgYwDNPPesDWw_LWCjz0Ud';
 const SIGNAL_SERVER = 'wss://safe-pig-42.fia-jiap.deno.net';
+const GITHUB_BASE = 'https://fia-jiap.github.io/doorlynk';
 
-// ── State ──
-let propertyName = localStorage.getItem('dl_property') || 'My Home';
-let geoEnabled = true;
-let geoRadius = 50;
-let familyMembers = JSON.parse(localStorage.getItem('dl_family') || '["You (Owner)"]');
-let visitorLog = JSON.parse(localStorage.getItem('dl_log') || '[]');
-let ownerStream = null;
-let ownerPC = null;
-let ownerWS = null;
-let ownerCallTimer = null;
-let ownerCallSeconds = 0;
-let ownerMuted = false;
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// ── Initialize ──
-document.getElementById('input-property-name').value = propertyName;
+let propertyName = localStorage.getItem('dl_prop') || 'My Home';
+
+// ── Init ──
+document.getElementById('inp-name').value = propertyName;
 updateUI();
-connectOwnerWS();
-drawQR();
+loadVisitors();
+generateQR();
 
-// ── Tab Switching ──
-function switchTab(tabName, btn) {
+// Auto-refresh every 30 seconds
+setInterval(loadVisitors, 30000);
+
+// ── Tabs ──
+function switchTab(name, btn) {
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('tab-' + tabName).classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
   btn.classList.add('active');
+  if (name === 'history') loadVisitors();
 }
 
-// ── Update UI ──
-function updateUI() {
-  document.getElementById('display-property-name').textContent = propertyName;
-  document.getElementById('display-member-count').textContent = familyMembers.length;
-  document.getElementById('qr-property-tag').textContent = propertyName;
-  
-  const slug = propertyName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-  document.getElementById('qr-url-display').textContent = `fia-jiap.github.io/doorlynk/visitor.html?p=${slug}`;
-  
-  // Stats
-  const today = new Date().toDateString();
-  const todayLogs = visitorLog.filter(v => new Date(v.timestamp).toDateString() === today);
-  document.getElementById('stat-total').textContent = todayLogs.length;
-  document.getElementById('stat-answered').textContent = todayLogs.filter(v => v.status === 'answered').length;
-  document.getElementById('stat-missed').textContent = todayLogs.filter(v => v.status === 'missed').length;
-  
-  // Recent list (home tab)
-  const recentEl = document.getElementById('recent-list');
-  recentEl.innerHTML = visitorLog.slice(0, 3).map(v => visitorItemHTML(v)).join('');
-  
-  // History list
-  const historyEl = document.getElementById('history-list');
-  const noHistory = document.getElementById('no-history');
-  if (visitorLog.length === 0) {
-    historyEl.innerHTML = '';
-    noHistory.classList.remove('hidden');
-  } else {
-    noHistory.classList.add('hidden');
-    historyEl.innerHTML = visitorLog.map(v => visitorItemHTML(v)).join('');
+// ── Load Visitors from Supabase ──
+async function loadVisitors() {
+  const slug = getSlug();
+
+  try {
+    const { data, error } = await sb.from('visitor_logs')
+      .select('*')
+      .eq('property_id', slug)
+      .order('created_at', { ascending: false })
+      .limit(50);
+
+    if (error) throw error;
+
+    // Stats
+    const today = new Date().toDateString();
+    const todayLogs = (data || []).filter(v => new Date(v.created_at).toDateString() === today);
+    document.getElementById('s-total').textContent = todayLogs.length;
+    document.getElementById('s-answered').textContent = todayLogs.filter(v => v.status === 'answered').length;
+    document.getElementById('s-missed').textContent = todayLogs.filter(v => ['missed','declined','ringing'].includes(v.status)).length;
+
+    // Recent (home tab)
+    const recentEl = document.getElementById('recent-list');
+    if (!data || data.length === 0) {
+      recentEl.innerHTML = '<div style="text-align:center;padding:30px;color:var(--dim);"><div style="font-size:40px;margin-bottom:10px;">📋</div><div style="font-size:13px;">No visitors yet. Share your QR code to get started.</div></div>';
+    } else {
+      recentEl.innerHTML = data.slice(0, 5).map(v => visitorHTML(v)).join('');
+    }
+
+    // Full history
+    const historyEl = document.getElementById('history-list');
+    if (!data || data.length === 0) {
+      historyEl.innerHTML = '<div style="text-align:center;padding:30px;color:var(--dim);"><div style="font-size:40px;margin-bottom:10px;">📋</div><div style="font-size:13px;">No visitors yet.</div></div>';
+    } else {
+      historyEl.innerHTML = data.map(v => visitorHTML(v)).join('');
+    }
+
+  } catch (err) {
+    console.error('Load error:', err);
+    document.getElementById('recent-list').innerHTML = '<div style="color:var(--red);font-size:12px;text-align:center;padding:20px;">Failed to load visitor data</div>';
   }
-  
-  // Family list
-  const familyEl = document.getElementById('family-list');
-  familyEl.innerHTML = familyMembers.map((m, i) => `
-    <div class="family-item">
-      <span class="family-name">${m}</span>
-      ${i > 0 ? `<button class="family-remove" onclick="removeFamilyMember(${i})">×</button>` : ''}
-    </div>
-  `).join('');
 }
 
-function visitorItemHTML(v) {
-  const timeStr = formatLogTime(v.timestamp);
-  const badgeClass = v.status === 'answered' ? 'badge-answered' : 'badge-missed';
-  const badgeText = v.status === 'answered' ? `✓ ${v.duration || ''}` : 'Missed';
+function visitorHTML(v) {
+  const time = formatLogTime(v.created_at);
+  const hasPhoto = v.photo_url && v.photo_url.length > 10;
+  const badgeClass = v.status === 'answered' ? 'badge-ok' : 'badge-miss';
+  const badgeText = v.status === 'answered' ? `✓ ${v.call_duration ? formatDuration(v.call_duration) : ''}` : v.status === 'declined' ? 'Declined' : v.status === 'ringing' ? 'Ringing' : 'Missed';
+  const locationText = v.visitor_location ? `📍 ${v.visitor_location.lat?.toFixed(4)}, ${v.visitor_location.lng?.toFixed(4)}` : '';
+
   return `
-    <div class="visitor-item">
-      <div class="visitor-avatar">👤</div>
-      <div class="visitor-info">
-        <div class="visitor-name">Visitor</div>
-        <div class="visitor-time">${timeStr}</div>
+    <div class="v-item" ${hasPhoto ? `onclick="showPhoto('${v.photo_url}')" style="cursor:pointer;"` : ''}>
+      <div class="v-avatar">
+        ${hasPhoto ? `<img src="${v.photo_url}" alt="Visitor" loading="lazy">` : '👤'}
       </div>
-      <div class="visitor-badge ${badgeClass}">${badgeText}</div>
+      <div class="v-info">
+        <div class="v-name">Visitor ${hasPhoto ? '📸' : ''}</div>
+        <div class="v-time">${time}</div>
+        ${locationText ? `<div style="font-size:10px;color:var(--dim);margin-top:1px;">${locationText}</div>` : ''}
+      </div>
+      <div class="v-badge ${badgeClass}">${badgeText}</div>
     </div>
   `;
 }
@@ -479,290 +320,108 @@ function formatLogTime(ts) {
   const d = new Date(ts);
   const now = new Date();
   const isToday = d.toDateString() === now.toDateString();
-  const yesterday = new Date(now); yesterday.setDate(yesterday.getDate() - 1);
-  const isYesterday = d.toDateString() === yesterday.toDateString();
+  const yest = new Date(now); yest.setDate(yest.getDate() - 1);
+  const isYesterday = d.toDateString() === yest.toDateString();
   const time = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   if (isToday) return 'Today, ' + time;
   if (isYesterday) return 'Yesterday, ' + time;
   return d.toLocaleDateString([], { month: 'short', day: 'numeric' }) + ', ' + time;
 }
 
-// ── Property Settings ──
-function updatePropertyName(val) {
+function formatDuration(s) {
+  if (!s) return '';
+  return Math.floor(s / 60) + ':' + (s % 60).toString().padStart(2, '0');
+}
+
+// ── Photo Modal ──
+function showPhoto(url) {
+  document.getElementById('modal-img').src = url;
+  document.getElementById('photo-modal').classList.remove('hidden');
+}
+function closePhotoModal() {
+  document.getElementById('photo-modal').classList.add('hidden');
+}
+
+// ── Update UI ──
+function updateUI() {
+  document.getElementById('d-name').textContent = propertyName;
+  document.getElementById('qr-tag').textContent = propertyName;
+  const slug = getSlug();
+  document.getElementById('qr-url-text').textContent = `${GITHUB_BASE}/visitor.html?p=${slug}`;
+}
+
+function getSlug() {
+  return propertyName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+}
+
+function updateName(val) {
   propertyName = val.trim() || 'My Home';
-  localStorage.setItem('dl_property', propertyName);
+  localStorage.setItem('dl_prop', propertyName);
   updateUI();
-  drawQR();
+  generateQR();
+  loadVisitors();
 }
 
-function toggleGeo() {
-  geoEnabled = !geoEnabled;
-  const btn = document.getElementById('toggle-geo');
-  const slider = document.getElementById('geo-slider');
-  btn.className = 'toggle-switch ' + (geoEnabled ? 'on' : 'off');
-  slider.style.display = geoEnabled ? 'block' : 'none';
-}
-
-function updateGeoRadius(val) {
-  geoRadius = parseInt(val);
-  document.getElementById('geo-radius-display').textContent = geoRadius;
-}
-
-function addFamilyMember() {
-  const input = document.getElementById('input-new-member');
-  const name = input.value.trim();
-  if (name) {
-    familyMembers.push(name);
-    localStorage.setItem('dl_family', JSON.stringify(familyMembers));
-    input.value = '';
-    updateUI();
-  }
-}
-
-function removeFamilyMember(i) {
-  familyMembers.splice(i, 1);
-  localStorage.setItem('dl_family', JSON.stringify(familyMembers));
-  updateUI();
-}
-
-// ── QR Code Drawing (Real scannable QR) ──
-let qrInstance = null;
-function drawQR() {
-  const container = document.getElementById('qr-canvas');
-  const slug = propertyName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-  const url = `https://fia-jiap.github.io/doorlynk/visitor.html?p=${slug}`;
-  
+// ── QR Code ──
+function generateQR() {
+  const container = document.getElementById('qr-code');
+  const slug = getSlug();
+  const url = `${GITHUB_BASE}/visitor.html?p=${slug}`;
   container.innerHTML = '';
-  qrInstance = new QRCode(container, {
-    text: url,
-    width: 200,
-    height: 200,
-    colorDark: '#070b14',
-    colorLight: '#ffffff',
-    correctLevel: QRCode.CorrectLevel.H
-  });
+  new QRCode(container, { text: url, width: 200, height: 200, colorDark: '#070b14', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.H });
 }
 
 function copyURL() {
-  const slug = propertyName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-  const url = `https://fia-jiap.github.io/doorlynk/visitor.html?p=${slug}`;
+  const slug = getSlug();
+  const url = `${GITHUB_BASE}/visitor.html?p=${slug}`;
   navigator.clipboard.writeText(url).then(() => {
-    const btn = document.querySelector('.qr-copy-btn');
+    const btn = document.querySelector('.qr-copy');
     btn.textContent = 'Copied!';
     setTimeout(() => btn.textContent = 'Copy', 2000);
-  }).catch(() => {
-    alert('URL: ' + url);
-  });
+  }).catch(() => alert('URL: ' + url));
 }
 
 function printQR() {
-  const container = document.getElementById('qr-canvas');
+  const container = document.getElementById('qr-code');
   const img = container.querySelector('img') || container.querySelector('canvas');
   const src = img.tagName === 'IMG' ? img.src : img.toDataURL();
   const win = window.open('', '_blank');
-  win.document.write(`
-    <html><head><title>DoorLynk QR Code</title>
-    <style>body{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;font-family:sans-serif;} h1{font-size:28px;margin-bottom:4px;} p{color:#666;margin-bottom:20px;} .tag{padding:6px 16px;background:#f0f0f0;border-radius:8px;font-size:14px;color:#666;margin-top:12px;}</style>
-    </head><body>
-    <h1>🔔 DoorLynk</h1>
-    <p>Scan to ring the bell</p>
-    <img src="${src}" width="250" height="250">
-    <div class="tag">${propertyName}</div>
-    <script>setTimeout(()=>window.print(),500)<\/script>
-    </body></html>
-  `);
+  win.document.write(`<html><head><title>DoorLynk QR</title><style>body{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;font-family:sans-serif;}h1{font-size:28px;margin-bottom:4px;}p{color:#666;margin-bottom:20px;}.tag{padding:6px 16px;background:#f0f0f0;border-radius:8px;font-size:14px;color:#666;margin-top:12px;}.note{margin-top:16px;font-size:11px;color:#999;}</style></head><body><h1>🔔 DoorLynk</h1><p>Scan to ring the bell</p><img src="${src}" width="250" height="250"><div class="tag">${propertyName}</div><div class="note">📸 Photo required before call</div><script>setTimeout(()=>window.print(),500)<\/script></body></html>`);
 }
 
 function shareQR() {
-  const slug = propertyName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-  const url = `https://fia-jiap.github.io/doorlynk/visitor.html?p=${slug}`;
+  const slug = getSlug();
+  const url = `${GITHUB_BASE}/visitor.html?p=${slug}`;
   if (navigator.share) {
-    navigator.share({ title: 'DoorLynk - ' + propertyName, text: 'Ring my doorbell:', url: url });
-  } else {
-    copyURL();
-  }
+    navigator.share({ title: 'DoorLynk - ' + propertyName, text: 'Ring my doorbell:', url });
+  } else copyURL();
 }
 
-// ── WebSocket (Owner Side) ──
-function connectOwnerWS() {
-  try {
-    ownerWS = new WebSocket(SIGNAL_SERVER);
-  } catch(e) {
-    console.log('Signaling server not available (demo mode)');
-    return;
-  }
-  
-  ownerWS.onopen = () => {
-    const slug = propertyName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-    ownerWS.send(JSON.stringify({ type: 'owner-register', propertyId: slug }));
-  };
-  
-  ownerWS.onmessage = async (event) => {
-    const msg = JSON.parse(event.data);
-    
-    switch(msg.type) {
-      case 'visitor-ringing':
-        showIncomingCall();
-        break;
-        
-      case 'offer':
-        await handleOffer(msg);
-        break;
-        
-      case 'ice-candidate':
-        if (ownerPC && msg.candidate) {
-          await ownerPC.addIceCandidate(new RTCIceCandidate(msg.candidate));
-        }
-        break;
-        
-      case 'call-ended':
-        ownerEndCall();
-        break;
+// ── Realtime subscription for new visitors ──
+sb.channel('visitor-changes')
+  .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'visitor_logs' }, (payload) => {
+    const slug = getSlug();
+    if (payload.new.property_id === slug) {
+      loadVisitors();
+      // Browser notification
+      if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification('🔔 DoorLynk', {
+          body: 'Someone is at your door!',
+          icon: payload.new.photo_url || undefined
+        });
+      }
+      // Vibrate
+      if ('vibrate' in navigator) navigator.vibrate([200, 100, 200, 100, 200]);
     }
-  };
-  
-  ownerWS.onerror = () => console.log('WS error (demo mode)');
-  ownerWS.onclose = () => {
-    // Reconnect after 5 seconds
-    setTimeout(connectOwnerWS, 5000);
-  };
-}
+  })
+  .subscribe();
 
-async function handleOffer(msg) {
-  ownerPC = new RTCPeerConnection({
-    iceServers: [
-      { urls: 'stun:stun.l.google.com:19302' },
-      { urls: 'stun:stun1.l.google.com:19302' },
-    ]
-  });
-  
-  // Get owner's camera
-  try {
-    ownerStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-    ownerStream.getTracks().forEach(t => ownerPC.addTrack(t, ownerStream));
-    
-    const selfVideo = document.getElementById('owner-self-video');
-    selfVideo.srcObject = ownerStream;
-    document.getElementById('owner-self-placeholder').style.display = 'none';
-  } catch(e) {
-    console.warn('Owner camera not available');
-  }
-  
-  ownerPC.ontrack = (event) => {
-    document.getElementById('owner-remote-video').srcObject = event.streams[0];
-    document.getElementById('owner-remote-placeholder').style.display = 'none';
-  };
-  
-  ownerPC.onicecandidate = (event) => {
-    if (event.candidate && ownerWS && ownerWS.readyState === WebSocket.OPEN) {
-      ownerWS.send(JSON.stringify({ type: 'ice-candidate', candidate: event.candidate, propertyId: propertyName.toLowerCase().replace(/\s+/g,'-') }));
-    }
-  };
-  
-  await ownerPC.setRemoteDescription(new RTCSessionDescription({ type: 'offer', sdp: msg.sdp }));
-  const answer = await ownerPC.createAnswer();
-  await ownerPC.setLocalDescription(answer);
-  ownerWS.send(JSON.stringify({ type: 'answer', sdp: answer.sdp, propertyId: propertyName.toLowerCase().replace(/\s+/g,'-') }));
-  
-  // Show connected call
-  document.getElementById('incoming-overlay').classList.add('hidden');
-  document.getElementById('call-overlay').classList.remove('hidden');
-  
-  ownerCallSeconds = 0;
-  ownerCallTimer = setInterval(() => {
-    ownerCallSeconds++;
-    document.getElementById('owner-timer').textContent = formatTime(ownerCallSeconds);
-  }, 1000);
-}
-
-// ── Incoming Call UI ──
-function showIncomingCall() {
-  document.getElementById('incoming-property').textContent = propertyName + ' • Just now';
-  document.getElementById('incoming-overlay').classList.remove('hidden');
-  
-  // Play notification sound if available
-  if ('vibrate' in navigator) navigator.vibrate([200, 100, 200, 100, 200]);
-}
-
-function simulateIncoming() {
-  showIncomingCall();
-}
-
-function acceptCall() {
-  document.getElementById('incoming-overlay').classList.add('hidden');
-  
-  if (ownerWS && ownerWS.readyState === WebSocket.OPEN) {
-    ownerWS.send(JSON.stringify({ type: 'call-accepted', propertyId: propertyName.toLowerCase().replace(/\s+/g,'-') }));
-  } else {
-    // Demo mode: show connected call directly
-    document.getElementById('call-overlay').classList.remove('hidden');
-    ownerCallSeconds = 0;
-    ownerCallTimer = setInterval(() => {
-      ownerCallSeconds++;
-      document.getElementById('owner-timer').textContent = formatTime(ownerCallSeconds);
-    }, 1000);
-  }
-  
-  // Log as answered
-  addVisitorLog('answered');
-}
-
-function declineCall() {
-  document.getElementById('incoming-overlay').classList.add('hidden');
-  
-  if (ownerWS && ownerWS.readyState === WebSocket.OPEN) {
-    ownerWS.send(JSON.stringify({ type: 'call-declined', propertyId: propertyName.toLowerCase().replace(/\s+/g,'-') }));
-  }
-  
-  addVisitorLog('missed');
-}
-
-function ownerToggleMute() {
-  if (!ownerStream) return;
-  ownerMuted = !ownerMuted;
-  ownerStream.getAudioTracks().forEach(t => t.enabled = !ownerMuted);
-  document.getElementById('owner-mute-btn').textContent = ownerMuted ? '🔊' : '🔇';
-}
-
-function ownerEndCall() {
-  if (ownerCallTimer) { clearInterval(ownerCallTimer); ownerCallTimer = null; }
-  if (ownerPC) { ownerPC.close(); ownerPC = null; }
-  if (ownerStream) { ownerStream.getTracks().forEach(t => t.stop()); ownerStream = null; }
-  
-  document.getElementById('call-overlay').classList.add('hidden');
-  document.getElementById('owner-self-placeholder').style.display = 'flex';
-  document.getElementById('owner-remote-placeholder').style.display = 'block';
-  
-  if (ownerWS && ownerWS.readyState === WebSocket.OPEN) {
-    ownerWS.send(JSON.stringify({ type: 'call-ended', propertyId: propertyName.toLowerCase().replace(/\s+/g,'-') }));
-  }
-  
-  updateUI();
-}
-
-// ── Visitor Log ──
-function addVisitorLog(status) {
-  const entry = {
-    timestamp: new Date().toISOString(),
-    status: status,
-    duration: status === 'answered' ? null : null
-  };
-  visitorLog.unshift(entry);
-  if (visitorLog.length > 50) visitorLog = visitorLog.slice(0, 50);
-  localStorage.setItem('dl_log', JSON.stringify(visitorLog));
-  updateUI();
-}
-
-function formatTime(s) {
-  return Math.floor(s/60) + ':' + (s%60).toString().padStart(2, '0');
-}
-
-// ── Request Notification Permission ──
+// Request notification permission
 if ('Notification' in window && Notification.permission === 'default') {
   Notification.requestPermission();
 }
 
-// ── Service Worker Registration (for PWA) ──
+// Service Worker
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').catch(() => {});
 }
